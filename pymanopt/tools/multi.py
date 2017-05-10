@@ -68,3 +68,6 @@ def multiexp(A, sym=False):
     l, v = np.linalg.eigh(A)
     l = np.expand_dims(np.exp(l), axis=-1)
     return multiprod(v, l * multitransp(v))
+
+def multiskew(A):
+    return 0.5*(A - multitransp(A))
