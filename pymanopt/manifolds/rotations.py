@@ -12,6 +12,12 @@ def randskew(n, N=1):
     # TODO: figure out how to do find like in matlab
     # I, J = np.find()
 
+    t = np.triu(np.ones(n), 1)
+    I = t[t > 0]
+
+    # TODO: check this against manopt version
+    K = np.tile(np.arange(0:N), (n*(n-1)/2, 1))
+
     raise NotImplementedError
 class Rotation(Manifold):
     """
@@ -104,16 +110,20 @@ class Rotation(Manifold):
             R[:,:,i] = Q
         return R
 
-
-
     def randvec(self, x):
         # U = randskew
         raise NotImplementedError
-    def transp(self, x1, x2, d):
-        raise NotImplementedError
 
-    def exp(self, x, u):
-       raise NotImplementedError
+
+    def transp(self, x1, x2, d):
+        return d
+
+    def exp(self, x, u, t=1):
+        exptU = t*U
+        for i in range(0, k):
+            exptU[:,:,i] = la.expm(exptU[:,:,i])
+        return multiprod(x, exptU)
+
 
     
 
@@ -122,4 +132,5 @@ class Rotation(Manifold):
         Computes the intrinsic mean of X and Y, that is, a point that lies
         mid-way between X and Y on the geodesic arc joining them.
         '''
-        raise NotImplementedError
+        V = self.log(X, Y)
+        return self.exp(X, 0.5*V)
